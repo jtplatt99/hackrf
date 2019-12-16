@@ -57,7 +57,7 @@ endif()
 
 foreach(tool ${TOOLS})
 	add_executable(${tool} ${tool}.c)
-	target_link_libraries(${tool} ${TOOLS_LINK_LIBS})
+	target_link_libraries(${tool} ${TOOLS_LINK_LIBS} -lm)
 	install(TARGETS ${tool} RUNTIME DESTINATION ${INSTALL_DEFAULT_BINDIR})
 endforeach(tool)
 

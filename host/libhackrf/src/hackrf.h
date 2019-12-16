@@ -246,6 +246,10 @@ extern ADDAPI int ADDCALL hackrf_set_operacake_ranges(hackrf_device* device,
                                                       uint8_t* ranges,
                                                       uint8_t num_ranges);
 
+extern ADDAPI int ADDCALL hackrf_counter_start(hackrf_device* device, int samples_per_antenna);
+
+extern ADDAPI int ADDCALL hackrf_counter_stop(hackrf_device* device);
+
 #ifdef __cplusplus
 } // __cplusplus defined.
 #endif

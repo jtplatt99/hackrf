@@ -45,6 +45,8 @@ static void usage() {
 	printf("\t-b <n>: set port B connection\n");
 	printf("\t-f <min:max:port>: automatically assign <port> for range <min:max> in MHz\n");
 	printf("\t-l, --list: list available operacake boards\n");
+	printf("\t-s --start <n>: start switching with 'n' samples per antenna\n");
+	printf("\t-e --stop: stop antenna switching\n");
 }
 
 static struct option long_options[] = {
@@ -52,6 +54,8 @@ static struct option long_options[] = {
 	{ "address", no_argument, 0, 'o' },
 	{ "list", no_argument, 0, 'v' },
 	{ "help", no_argument, 0, 'h' },
+	{ "start", no_argument, 0, 's' },
+	{ "stop", no_argument, 0, 'e' },
 	{ 0, 0, 0, 0 },
 };
 
@@ -125,9 +129,12 @@ int parse_u16_range(char* s, hackrf_oc_range* range) {
 int main(int argc, char** argv) {
 	int opt;
 	const char* serial_number = NULL;
-	int operacake_address = 0;
+	int operacake_address = 24;
+	bool samples_per_antenna = 0;
 	int port_a = 0;
 	int port_b = 0;
+	bool counter_start = false;
+	bool counter_stop = false;
 	bool set_ports = false;
 	bool list = false;
 	uint8_t operacakes[8];
@@ -144,7 +151,7 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	while( (opt = getopt_long(argc, argv, "d:o:a:b:lf:h?", long_options, &option_index)) != EOF ) {
+	while( (opt = getopt_long(argc, argv, "d:o:s:ea:b:lf:h?", long_options, &option_index)) != EOF ) {
 		switch( opt ) {
 		case 'd':
 			serial_number = optarg;
@@ -152,7 +159,6 @@ int main(int argc, char** argv) {
 
 		case 'o':
 			operacake_address = atoi(optarg);
-			set_ports = true;
 			break;
 
 		case 'f':
@@ -179,11 +185,22 @@ int main(int argc, char** argv) {
 			}
 			break;
 
+		case 's':
+			counter_start = true;
+			samples_per_antenna = atoi(optarg);
+			break;
+
+		case 'e':
+			counter_stop = true;
+			break;
+
 		case 'a':
+			set_ports = true;
 			port_a = atoi(optarg);
 			break;
 
 		case 'b':
+			set_ports = true;
 			port_b = atoi(optarg);
 			break;
 
@@ -202,7 +219,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	if(!(list || set_ports || range_idx)) {
+	if(!(list || set_ports || counter_start || counter_stop || range_idx)) {
 		fprintf(stderr, "Specify either list or address option.\n");
 		usage();
 		return EXIT_FAILURE;
@@ -232,6 +249,21 @@ int main(int argc, char** argv) {
 		if(!operacake_count)
 			printf("None");
 		printf("\n");
+	}
+	if(counter_start) {
+		result = hackrf_counter_start(device, samples_per_antenna);
+		if( result ) {
+			printf("hackrf_set_counter_start() failed: %s (%d)\n", hackrf_error_name(result), result);
+			return -1;
+		}
+	}
+
+	if(counter_stop) {
+		result = hackrf_counter_stop(device);
+		if( result ) {
+			printf("hackrf_counter_stop() failed: %s (%d)\n", hackrf_error_name(result), result);
+			return -1;
+		}
 	}
 
 	if(set_ports) {

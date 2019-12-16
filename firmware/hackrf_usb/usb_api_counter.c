@@ -162,6 +162,8 @@ usb_request_status_t usb_vendor_request_counter_start(
 		#define U3CTRL1_CLR SCT_OUT8_CLR
 		#endif
 
+		#define INNERSWITCH
+#ifdef REGULAR
 		// Event 0, 2 sets output 3, 2. Event 1, 3 clears output 3, 2.
 		U2CTRL0_SET = SCT_OUT13_SET_SET0(1) | SCT_OUT13_SET_SET2(1);
 		U2CTRL0_CLR = SCT_OUT13_CLR_CLR1(1) | SCT_OUT13_CLR_CLR3(1);
@@ -176,6 +178,43 @@ usb_request_status_t usb_vendor_request_counter_start(
 
 		U3CTRL1_SET = SCT_OUT8_SET_SET1(1) | SCT_OUT8_SET_SET2(1);
 		U3CTRL1_CLR = SCT_OUT8_CLR_CLR0(1) | SCT_OUT8_CLR_CLR3(1);
+#endif
+
+#ifdef OUTERSWITCH
+		// This should allow the Operacake to switch around only the outer antennas for better path matching
+		U1CTRL_SET = SCT_OUT14_SET_SET0(1) | SCT_OUT14_SET_SET1(1);
+		U1CTRL_CLR = SCT_OUT14_CLR_CLR2(1) | SCT_OUT14_CLR_CLR3(1);
+
+		U2CTRL1_SET = SCT_OUT12_SET_SET1(1) | SCT_OUT12_SET_SET2(1);
+		U2CTRL1_CLR = SCT_OUT12_CLR_CLR0(1) | SCT_OUT12_CLR_CLR3(1);
+
+		U2CTRL0_SET = SCT_OUT13_SET_SET1(1) | SCT_OUT13_SET_SET2(1);
+		U2CTRL0_CLR = SCT_OUT13_CLR_CLR0(1) | SCT_OUT13_CLR_CLR3(1);
+
+		U3CTRL1_SET = SCT_OUT8_SET_SET1(1) | SCT_OUT8_SET_SET2(1);
+		U3CTRL1_CLR = SCT_OUT8_CLR_CLR0(1) | SCT_OUT8_CLR_CLR3(1);
+
+		U3CTRL0_SET = SCT_OUT11_SET_SET1(1) | SCT_OUT11_SET_SET2(1);
+		U3CTRL0_CLR = SCT_OUT11_CLR_CLR0(1) | SCT_OUT11_CLR_CLR3(1);
+#endif
+
+#ifdef INNERSWITCH
+		// This should allow the Operacake to switch around only the inner antennas for better path matching
+		U1CTRL_SET = SCT_OUT14_SET_SET0(1) | SCT_OUT14_SET_SET1(1);
+		U1CTRL_CLR = SCT_OUT14_CLR_CLR2(1) | SCT_OUT14_CLR_CLR3(1);
+
+		U2CTRL1_SET = SCT_OUT12_SET_SET1(1) | SCT_OUT12_SET_SET2(1);
+		U2CTRL1_CLR = SCT_OUT12_CLR_CLR0(1) | SCT_OUT12_CLR_CLR3(1);
+
+		U2CTRL0_SET = SCT_OUT13_SET_SET0(1) | SCT_OUT13_SET_SET3(1);
+		U2CTRL0_CLR = SCT_OUT13_CLR_CLR1(1) | SCT_OUT13_CLR_CLR2(1);
+
+		U3CTRL1_SET = SCT_OUT8_SET_SET1(1) | SCT_OUT8_SET_SET2(1);
+		U3CTRL1_CLR = SCT_OUT8_CLR_CLR0(1) | SCT_OUT8_CLR_CLR3(1);
+
+		U3CTRL0_SET = SCT_OUT11_SET_SET0(1) | SCT_OUT11_SET_SET3(1);
+		U3CTRL0_CLR = SCT_OUT11_CLR_CLR1(1) | SCT_OUT11_CLR_CLR2(1);
+#endif
 
 		// Event 3 toggles output 5.
 		#define ONESIDE // Use only 4 antennas, and stay on the same side; comment for 8 antennas

@@ -79,6 +79,9 @@ typedef enum {
 	HACKRF_VENDOR_REQUEST_SET_HW_SYNC_MODE = 29,
 	HACKRF_VENDOR_REQUEST_RESET = 30,
 	HACKRF_VENDOR_REQUEST_OPERACAKE_SET_RANGES = 31,
+	HACKRF_VENDOR_REQUEST_COUNTER_START = 32,
+	HACKRF_VENDOR_REQUEST_COUNTER_STOP = 33,
+	// HACKRF_VENDOR_REQUEST_COUNTER_SET = 34,
 } hackrf_vendor_request;
 
 #define USB_CONFIG_STANDARD 0x1
@@ -1991,6 +1994,49 @@ int ADDCALL hackrf_set_operacake_ranges(hackrf_device* device, uint8_t* ranges, 
 		return HACKRF_SUCCESS;
 	}
 }
+
+int ADDCALL hackrf_counter_start(hackrf_device* device, int samples_per_antenna) {
+	USB_API_REQUIRED(device, 0x0102)
+	int result = libusb_control_transfer(
+		device->usb_device,
+ 		LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE,
+		HACKRF_VENDOR_REQUEST_COUNTER_START,
+		(samples_per_antenna*4-1),
+		samples_per_antenna,
+		NULL,
+		0,
+		0
+	);
+
+	if( result != 0 ) {
+		last_libusb_error = result;
+		return HACKRF_ERROR_LIBUSB;
+	} else {
+		return HACKRF_SUCCESS;
+	}
+}
+
+int ADDCALL hackrf_counter_stop(hackrf_device* device) {
+	USB_API_REQUIRED(device, 0x0102)
+	int result = libusb_control_transfer(
+		device->usb_device,
+ 		LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE,
+		HACKRF_VENDOR_REQUEST_RESET,
+		0,
+		1,
+		NULL,
+		0,
+		0
+	);
+
+	if( result != 0 ) {
+		last_libusb_error = result;
+		return HACKRF_ERROR_LIBUSB;
+	} else {
+		return HACKRF_SUCCESS;
+	}
+}
+
 #ifdef __cplusplus
 } // __cplusplus defined.
 #endif
