@@ -43,6 +43,7 @@ set(SRC_M4
 	usb_api_spiflash.c
 	usb_api_transceiver.c
 	"${PATH_HACKRF_FIRMWARE_COMMON}/operacake.c"
+	"${PATH_HACKRF_FIRMWARE_COMMON}/operacake_rotator.c"
 	usb_api_operacake.c
 	usb_api_sweep.c
 	usb_api_counter.c
